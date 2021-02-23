@@ -1,4 +1,36 @@
-cbmemory:
-	g++ -std=c++11 -o cbmemory src/main.cpp src/MemoryMonitor.cpp src/BaseMemoryMonitoredObject.cpp src/MemoryMonitorError.cpp -Iinclude
+default: cbmemory
 
-.PHONY: cbmemory
+include make/c++.mk
+include make/tools.mk
+include make/sources.mk
+include src/make.mk
+include examples/make.mk
+
+CBMEMORY_LIBRARY = 							$(CBMEMORY_BINARY_DIRECTORY)/cbmemory.lib
+CBMEMORY_EXAMPLES_EXECUTABLE =	$(CBMEMORY_BINARY_DIRECTORY)/cbmemory-examples
+
+CPP_INCLUDES += $(CBMEMORY_INCLUDE_DIRECTORY)
+
+cbmemory: $(CBMEMORY_LIBRARY)
+
+$(CBMEMORY_LIBRARY): $(CBMEMORY_OBJECT_FILES)
+	$(MAKE_DIRECTORY) $(@D)
+	$(REMOVE) $@
+	$(MAKE_LIBRARY) $(CBMEMORY_LIBRARY) $^
+
+cbmemory-clean:
+	$(REMOVE) $(CBMEMORY_OBJECT_FILES) $(CBMEMORY_EXAMPLES_OBJECT_FILES) $(CBMEMORY_EXAMPLES_EXECUTABLE) $(CBMEMORY_LIBRARY)
+
+cbmemory-examples: $(CBMEMORY_EXAMPLES_EXECUTABLE)
+	$(CBMEMORY_EXAMPLES_EXECUTABLE)
+
+$(CBMEMORY_EXAMPLES_EXECUTABLE): $(CBMEMORY_OBJECT_FILES) $(CBMEMORY_EXAMPLES_OBJECT_FILES) examples/examples.cpp
+	$(MAKE_DIRECTORY) $(@D)
+	$(REMOVE) $@
+	$(CPP) -o $@ $^
+
+$(CBMEMORY_BUILD_DIRECTORY)/%.o: %.cpp
+	$(MAKE_DIRECTORY) $(@D)
+	$(CPP) -c -o $@ $^ 
+
+.PHONY: cbmemory-clean
