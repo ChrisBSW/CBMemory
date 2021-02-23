@@ -1,8 +1,10 @@
 #pragma once
 
-#include "MemoryMonitoredObject.hpp"
+#include "BaseMemoryMonitoredObject.hpp"
 #include "MemoryMonitorError.hpp"
 #include <set>
+#include <algorithm>
+#include <ostream>
 
 namespace CBMemory
 {
@@ -10,16 +12,19 @@ namespace CBMemory
   class MemoryMonitorVirtualDestructorChecker
   {
   public:
-    static void check() 
+    static bool check() 
     {
-      throw MissingVirtualDestructorError(className, filename, lineNumber);
+      return false;
     }
   };
 
   template <class T> class MemoryMonitorVirtualDestructorChecker<T, typename std::enable_if<std::has_virtual_destructor<T>::value>::type>
   {
   public:
-    static void check() {}
+    static bool check() 
+    {
+      return true;
+    }
   };
 
   class MemoryMonitor
@@ -42,15 +47,34 @@ namespace CBMemory
       bool operator()(const Object& lhs, const Object& rhs) const;
     };
     using Objects = std::set<Object, ObjectCompare>;
+    using const_iterator = Objects::const_iterator;
+
+    const_iterator begin() const;
+    const_iterator end() const;
+    bool hasUndeletedObjects() const;
 
     using Error = MemoryMonitorError;
   private:
-    template <class T> void addObject(const std::string& className, const char* filename, uint32_t lineNumber, const MemoryMonitoredObject<T>* object)
+    template <class T> void addObject(const std::string& className, const char* filename, uint32_t lineNumber, const BaseMemoryMonitoredObject* object)
     {
-      MemoryMonitorVirtualDestructorChecker<T>::check();
-      _objects.insert({className, filename, lineNumber, object});
+      if (MemoryMonitorVirtualDestructorChecker<T>::check())
+      {
+        this->addObject(className, filename, lineNumber, object);
+      }
+      else
+      {
+        throw MissingVirtualDestructorError(className, filename, lineNumber);
+      }
     }
+
+    void addObject(const std::string& className, const char* filename, uint32_t lineNumber, const BaseMemoryMonitoredObject* object);
+
+    void removeObject(const BaseMemoryMonitoredObject* object);
   private:
     Objects _objects;
   };
+
+  extern MemoryMonitor& monitor;
 }
+
+std::ostream& operator << (std::ostream& ostream, const ::CBMemory::MemoryMonitor::Object& object);
