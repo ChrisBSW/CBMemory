@@ -26,10 +26,10 @@ namespace CBMemory
     uint32_t _lineNumber;
   };
 
-  class UntrackedNewAlocator
+  class UntrackedNewAllocator
   {
   public:
-    template <class T, class ...Arguments> T* allocate(Arguments&&... arguments)
+    template <class T, class ...Arguments> static T* allocate(Arguments&&... arguments)
     {
       return new T (std::forward<Arguments>(arguments)...);
     }

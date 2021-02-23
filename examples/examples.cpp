@@ -1,4 +1,5 @@
 #include "undeleted_example.hpp"
+#include "untracked_example.hpp"
 #include "deleted_example.hpp"
 #include "missingVirtualDestructor_example.hpp"
 
@@ -13,5 +14,7 @@ int main()
   undeletedExample();
   std::cout << "Missing Virtual Destructor Example - ";
   missingVirtualDestructorExample();
+  std::cout << "Untracked Example - ";
+  untrackedExample();
   std::cout << std::endl;
 }
