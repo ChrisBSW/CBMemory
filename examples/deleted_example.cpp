@@ -1,5 +1,6 @@
-#include "cbmemory.hpp"
+#include "deleted_example.hpp"
 
+#include "cbmemory.hpp"
 #include <iostream>
 
 class DeletedExample
@@ -11,7 +12,7 @@ public:
 
 void deletedExample()
 {
-  DeletedExample* deleted = tracked_new(DeletedExample)();
+  DeletedExample* deleted = tracked_new<DeletedExample>();
   
   delete deleted;
 

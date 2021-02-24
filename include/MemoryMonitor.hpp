@@ -31,15 +31,22 @@ namespace CBMemory
   {
     friend class TrackedNewAllocator;
     template <class T> friend class MemoryMonitoredObject;
+    template <class T> friend class MemoryMonitoredArray;
   public:
     static MemoryMonitor& instance();
   
+    enum class Type
+    {
+      Object,
+      Array
+    };
     struct Object
     {
-      std::string className;
+      Type type;
       const char* filename;
       uint32_t lineNumber;
       const BaseMemoryMonitoredObject* object;
+      std::size_t size;
     };
 
     struct ObjectCompare
@@ -55,21 +62,29 @@ namespace CBMemory
 
     using Error = MemoryMonitorError;
   private:
-    template <class T> void addObject(const std::string& className, const char* filename, uint32_t lineNumber, const BaseMemoryMonitoredObject* object)
+    template <class T> void addObject(const char* filename, uint32_t lineNumber, const BaseMemoryMonitoredObject* object)
     {
       if (MemoryMonitorVirtualDestructorChecker<T>::check())
       {
-        this->addObject(className, filename, lineNumber, object);
+        this->addObject(filename, lineNumber, object);
       }
       else
       {
-        throw MissingVirtualDestructorError(className, filename, lineNumber);
+        throw MissingVirtualDestructorError(filename, lineNumber);
       }
     }
 
-    void addObject(const std::string& className, const char* filename, uint32_t lineNumber, const BaseMemoryMonitoredObject* object);
+    template <class T> void addArray(const char* filename, uint32_t lineNumber, const BaseMemoryMonitoredObject* array, std::size_t size)
+    {
+      this->addArray(filename, lineNumber, array, size);
+    }
+
+    void addObject(const char* filename, uint32_t lineNumber, const BaseMemoryMonitoredObject* object);
+    void addArray(const char* filename, uint32_t lineNumber, const BaseMemoryMonitoredObject* array, std::size_t size);
+
 
     void removeObject(const BaseMemoryMonitoredObject* object);
+    void removeArray(const BaseMemoryMonitoredObject* array, std::size_t size);
   private:
     Objects _objects;
   };

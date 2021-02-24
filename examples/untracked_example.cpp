@@ -1,3 +1,4 @@
+#include "untracked_example.hpp"
 #define CBMEMORY_TRACK 0
 
 #include "cbmemory.hpp"
@@ -13,7 +14,7 @@ public:
 
 void untrackedExample()
 {
-  UntrackedExample* untracked = tracked_new(UntrackedExample)();
+  UntrackedExample* untracked = tracked_new<UntrackedExample>();
   // oops! forgot to delete
 
   if (!::CBMemory::monitor.instance().hasUndeletedObjects())

@@ -4,6 +4,7 @@
 #include "MemoryMonitor.hpp"
 
 #include <string>
+#include <iostream>
 
 namespace CBMemory
 {

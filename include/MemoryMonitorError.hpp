@@ -20,6 +20,6 @@ namespace CBMemory
   class MissingVirtualDestructorError: public MemoryMonitorError
   {
   public:
-    MissingVirtualDestructorError(const std::string& className, const char* filename, uint32_t lineNumber);
+    MissingVirtualDestructorError(const char* filename, uint32_t lineNumber);
   };
 }

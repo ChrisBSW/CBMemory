@@ -1,6 +1,7 @@
 
-#include "cbmemory.hpp"
+#include "missingVirtualDestructor_example.hpp"
 
+#include "cbmemory.hpp"
 #include <iostream>
 
 class MissingVirtualDestructorExample
@@ -13,7 +14,7 @@ void missingVirtualDestructorExample()
 {
   try
   {
-    MissingVirtualDestructorExample* missingVirtualDestructor = tracked_new(MissingVirtualDestructorExample)();
+    MissingVirtualDestructorExample* missingVirtualDestructor = tracked_new<MissingVirtualDestructorExample>();
     delete missingVirtualDestructor;
   }
   catch (const ::CBMemory::MemoryMonitor::Error& error)
