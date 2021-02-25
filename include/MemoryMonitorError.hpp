@@ -16,10 +16,4 @@ namespace CBMemory
     const char* _filename;
     uint32_t _lineNumber;
   };
-
-  class MissingVirtualDestructorError: public MemoryMonitorError
-  {
-  public:
-    MissingVirtualDestructorError(const char* filename, uint32_t lineNumber);
-  };
 }

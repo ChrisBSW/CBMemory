@@ -7,6 +7,8 @@ class DeletedArrayExample
 {
 public:
   virtual ~DeletedArrayExample() {}
+
+  void function() {}
 };
 
 void deletedArrayExample()
@@ -16,6 +18,7 @@ void deletedArrayExample()
   DeletedArrayExampleArray* array = tracked_new_array<DeletedArrayExample[5]>();
   std::cout << static_cast<CBMemory::BaseMemoryMonitoredObject*>(array) << std::endl;
   
+  array[1].function();
   delete [] array;
 
   if (!::CBMemory::monitor.instance().hasUndeletedObjects())

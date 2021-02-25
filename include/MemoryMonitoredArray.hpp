@@ -8,7 +8,7 @@
 
 namespace CBMemory
 {
-  template <class T> class MemoryMonitoredArray: public BaseMemoryMonitoredObject, public T
+  template <class T, class Enabler = void> class MemoryMonitoredArray: public BaseMemoryMonitoredObject, public T
   {
   public:
     void operator delete[](void* ptr)
@@ -31,6 +31,34 @@ namespace CBMemory
     {
       return reinterpret_cast<void*>(reinterpret_cast<std::size_t>(ptr) + sizeof(ptr));
     }
+  };
+
+  template <class T> class MemoryMonitoredArray<T, typename std::enable_if<IsInheritable<T>::value>::type>: public BaseMemoryMonitoredObject
+  {
+  public:
+    void operator delete[](void* ptr)
+    {
+      void* array = ptrToArrayOffset(ptr);
+      MemoryMonitor::instance().removeObject(static_cast<BaseMemoryMonitoredObject*>(array));
+    }
+    
+    MemoryMonitoredArray<T>& operator = (const T& object )
+    {
+      _object = object;
+      return *this;
+    }
+
+    operator const T&() const
+    {
+      return _object;
+    }
+  private:
+    static void* ptrToArrayOffset(void* ptr)
+    {
+      return reinterpret_cast<void*>(reinterpret_cast<std::size_t>(ptr) + sizeof(ptr));
+    }
+
+    T _object;
   };
 
 #if CBMEMORY_TRACK == 1

@@ -30,8 +30,8 @@ namespace CBMemory
   class MemoryMonitor
   {
     friend class TrackedNewAllocator;
-    template <class T> friend class MemoryMonitoredObject;
-    template <class T> friend class MemoryMonitoredArray;
+    template <class T, class Enabler> friend class MemoryMonitoredObject;
+    template <class T, class Enabler> friend class MemoryMonitoredArray;
   public:
     static MemoryMonitor& instance();
   
@@ -64,14 +64,7 @@ namespace CBMemory
   private:
     template <class T> void addObject(const char* filename, uint32_t lineNumber, const BaseMemoryMonitoredObject* object)
     {
-      if (MemoryMonitorVirtualDestructorChecker<T>::check())
-      {
-        this->addObject(filename, lineNumber, object);
-      }
-      else
-      {
-        throw MissingVirtualDestructorError(filename, lineNumber);
-      }
+      this->addObject(filename, lineNumber, object);
     }
 
     template <class T> void addArray(const char* filename, uint32_t lineNumber, const BaseMemoryMonitoredObject* array, std::size_t size)

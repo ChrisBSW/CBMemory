@@ -22,8 +22,4 @@ namespace CBMemory
   {
     return _lineNumber;
   }
-
-  MissingVirtualDestructorError::MissingVirtualDestructorError(const char* filename, uint32_t lineNumber):
-    MemoryMonitorError("class must have a virtual destructor", filename, lineNumber)
-  {}
 }

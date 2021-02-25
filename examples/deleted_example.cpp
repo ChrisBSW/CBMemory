@@ -8,12 +8,18 @@ class DeletedExample
 public:
   DeletedExample() {}  
   virtual ~DeletedExample() {}
+
+  int variable = 9;
+  void function() {}
 };
 
 void deletedExample()
 {
-  DeletedExample* deleted = tracked_new<DeletedExample>();
+  using DeletedExampleObject = CBMemory::ObjectType<DeletedExample>;
+  DeletedExampleObject* deleted = tracked_new<DeletedExample>();
   
+  deleted->variable = 7;
+  deleted->function();
   delete deleted;
 
   if (!::CBMemory::monitor.instance().hasUndeletedObjects())

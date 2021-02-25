@@ -40,7 +40,7 @@ namespace CBMemory
       _lineNumber(lineNumber)
     {}
 
-    template <class T, class ...Arguments> T* allocate(Arguments&&... arguments)
+    template <class T, class ...Arguments> MemoryMonitoredObject<T>* allocate(Arguments&&... arguments)
     {
       MemoryMonitoredObject<T>* object = new MemoryMonitoredObject<T>(std::forward<Arguments>(arguments)...);
       MemoryMonitor::instance().addObject<T>(_filename, _lineNumber, object);

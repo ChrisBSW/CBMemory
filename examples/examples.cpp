@@ -1,9 +1,9 @@
 #include "undeleted_example.hpp"
 #include "untracked_example.hpp"
 #include "deleted_example.hpp"
-#include "missingVirtualDestructor_example.hpp"
 #include "undeletedArray_example.hpp"
 #include "deletedArray_example.hpp"
+#include "fundamentalType_example.hpp"
 
 #include <iostream>
 
@@ -17,9 +17,6 @@ int main()
   std::cout << "Undeleted Example - ";
   undeletedExample();
 
-  std::cout << "Missing Virtual Destructor Example - ";
-  missingVirtualDestructorExample();
-
   std::cout << "Untracked Example - ";
   untrackedExample();
 
@@ -28,6 +25,9 @@ int main()
 
   std::cout << "Deleted Array Example - ";
   deletedArrayExample();
+
+  std::cout << "Fundamental Type Example - ";
+  fundamentalTypeExample();
 
   std::cout << std::endl;
 }

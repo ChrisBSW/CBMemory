@@ -12,7 +12,8 @@ public:
 
 void undeletedExample()
 {
-  UndeletedExample* undeleted = tracked_new<UndeletedExample>();
+  using UndeletedExampleObject = CBMemory::ObjectType<UndeletedExample>;
+  UndeletedExampleObject* undeleted = tracked_new<UndeletedExample>();
   // oops! forgot to delete
 
   if (::CBMemory::monitor.instance().hasUndeletedObjects())
