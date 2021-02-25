@@ -30,6 +30,7 @@ namespace CBMemory
   class MemoryMonitor
   {
     friend class TrackedNewAllocator;
+    template <class T> friend class TrackedNewObjectAllocator;
     template <class T, class Enabler> friend class MemoryMonitoredObject;
     template <class T, class Enabler> friend class MemoryMonitoredArray;
   public:

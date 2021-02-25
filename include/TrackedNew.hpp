@@ -6,29 +6,29 @@
 
 namespace CBMemory
 {
-  template <class T> class TrackedNewArrayAllocator
+  template <class T> class TrackedNewObjectAllocator
   {
   public:
-    using Type = T;
-    static constexpr std::size_t size = 0;
+    using ObjectType = MemoryMonitoredObject<T>;
 
-    static MemoryMonitoredArray<T>* allocate(const char* filename, uint32_t lineNumber)
+    template <class ...Arguments> static ObjectType* allocate(const char* filename, uint32_t lineNumber, Arguments&&... arguments)
     {
-      throw MemoryMonitorError("Not an array Type", filename, lineNumber);
+      ObjectType* output = new ObjectType(std::forward<Arguments>(arguments)...);
+      MemoryMonitor::instance().addObject<T>(filename, lineNumber, output);
+      return output;
     }
   };
 
-  template <class T, std::size_t Size> class TrackedNewArrayAllocator<T[Size]>
+  template <class T, std::size_t Size> class TrackedNewObjectAllocator<T[Size]>
   {
   public:
-    using Type = T;
-    static constexpr std::size_t size = Size;
+    using ObjectType = MemoryMonitoredArray<T>;  
     
-    static MemoryMonitoredArray<T>* allocate(const char* filename, uint32_t lineNumber)
+    template <class ...Arguments> static ObjectType* allocate(const char* filename, uint32_t lineNumber, Arguments&&... arguments)
     {
-      (void)filename;
-      (void)lineNumber;
-      return new MemoryMonitoredArray<T>[Size];
+      ObjectType* output = new ObjectType[Size];
+      MemoryMonitor::instance().addArray<T>(filename, lineNumber, output, Size);
+      return output;
     }
   };
 
@@ -40,23 +40,37 @@ namespace CBMemory
       _lineNumber(lineNumber)
     {}
 
-    template <class T, class ...Arguments> MemoryMonitoredObject<T>* allocate(Arguments&&... arguments)
+    template <class T, class ...Arguments> typename TrackedNewObjectAllocator<T>::ObjectType* allocate(Arguments&&... arguments)
     {
-      MemoryMonitoredObject<T>* object = new MemoryMonitoredObject<T>(std::forward<Arguments>(arguments)...);
-      MemoryMonitor::instance().addObject<T>(_filename, _lineNumber, object);
-      return object;
-    }
-
-    template <class T> MemoryMonitoredArray<typename TrackedNewArrayAllocator<T>::Type>* allocateArray()
-    {
-      MemoryMonitoredArray<typename TrackedNewArrayAllocator<T>::Type>* object = TrackedNewArrayAllocator<T>::allocate(_filename, _lineNumber);
-      
-      MemoryMonitor::instance().addArray<T>(_filename, _lineNumber, object, TrackedNewArrayAllocator<T>::size);
-      return object;
+      return TrackedNewObjectAllocator<T>::allocate(_filename, _lineNumber, std::forward<Arguments>(arguments)...);
     }
   private:
     const char* _filename;
     uint32_t _lineNumber;
+  };
+
+ template <class T> class UntrackedNewObjectAllocator
+  {
+  public:
+    using Type = T;
+    static constexpr std::size_t size = 0;
+
+    template <class ...Arguments> static T* allocate(Arguments&&... arguments)
+    {
+      return new T(std::forward<Arguments>(arguments)...);
+    }
+  };
+
+  template <class T, std::size_t Size> class UntrackedNewObjectAllocator<T[Size]>
+  {
+  public:
+    using Type = T;
+    static constexpr std::size_t size = Size;
+    
+    template <class ...Arguments> static T* allocate(Arguments&&... arguments)
+    {
+      return new T[Size];
+    }
   };
 
   class UntrackedNewAllocator
@@ -64,21 +78,13 @@ namespace CBMemory
   public:
     template <class T, class ...Arguments> static T* allocate(Arguments&&... arguments)
     {
-      return new T (std::forward<Arguments>(arguments)...);
-    }
-    template <class T> T* allocateArray(std::size_t size)
-    {
-      return new T[size];
+      return UntrackedNewObjectAllocator<T>::allocate(std::forward<Arguments>(arguments)...);
     }
   };
 }
 
 #if CBMEMORY_TRACK == 1
 #define tracked_new ::CBMemory::TrackedNewAllocator(__FILE__, __LINE__).allocate
-#define tracked_new_array ::CBMemory::TrackedNewAllocator(__FILE__, __LINE__).allocateArray
-#define tracked_new_array_type ::CBMemory::MemoryMonitoredArray
 #else
 #define tracked_new ::CBMemory::UntrackedNewAllocator::allocate
-#define tracked_new_array ::CBMemory::UntrackedNewAllocator::allocateArray
-#define tracked_new_array_type
 #endif

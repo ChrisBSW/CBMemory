@@ -16,7 +16,7 @@ void fundamentalTypeExample()
 
 
   using uint32_tArray = CBMemory::ArrayType<uint32_t>;
-  uint32_tArray* array = tracked_new_array<uint32_t[5]>();
+  uint32_tArray* array = tracked_new<uint32_t[5]>();
   
   array[0] = 7;
 

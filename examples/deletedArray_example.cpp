@@ -15,8 +15,7 @@ void deletedArrayExample()
 {
   using DeletedArrayExampleArray = CBMemory::ArrayType<DeletedArrayExample>;
 
-  DeletedArrayExampleArray* array = tracked_new_array<DeletedArrayExample[5]>();
-  std::cout << static_cast<CBMemory::BaseMemoryMonitoredObject*>(array) << std::endl;
+  DeletedArrayExampleArray* array = tracked_new<DeletedArrayExample[5]>();
   
   array[1].function();
   delete [] array;

@@ -16,7 +16,7 @@ void undeletedArrayExample()
   //using UndeletedArrayExampleArray = tracked_new_array_type(UndeletedArrayExample);
   using UndeletedArrayExampleArray = CBMemory::ArrayType<UndeletedArrayExample>;
 
-  UndeletedArrayExampleArray* array = tracked_new_array<UndeletedArrayExample[5]>();
+  UndeletedArrayExampleArray* array = tracked_new<UndeletedArrayExample[5]>();
   
   if (::CBMemory::monitor.instance().hasUndeletedObjects())
   {
