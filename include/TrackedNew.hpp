@@ -23,9 +23,12 @@ namespace CBMemory
   {
   public:
     using ObjectType = MemoryMonitoredArray<T>;  
+
+    struct sink { template<typename ...Args> sink(Args const & ... ) {} };
     
     template <class ...Arguments> static ObjectType* allocate(const char* filename, uint32_t lineNumber, Arguments&&... arguments)
     {
+      sink {arguments...};
       ObjectType* output = new ObjectType[Size];
       MemoryMonitor::instance().addArray<T>(filename, lineNumber, output, Size);
       return output;
@@ -67,8 +70,11 @@ namespace CBMemory
     using Type = T;
     static constexpr std::size_t size = Size;
     
+    struct sink { template<typename ...Args> sink(Args const & ... ) {} };
+
     template <class ...Arguments> static T* allocate(Arguments&&... arguments)
     {
+      sink {arguments...};
       return new T[Size];
     }
   };

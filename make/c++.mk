@@ -1,6 +1,6 @@
 CPP_STANDARD = -std=c++11
 
-CPP_WARNINGS = -Wall -Werror
+CPP_WARNINGS = -Wall -Werror -Wextra
 
 CPP_INCLUDES =
 
